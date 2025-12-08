@@ -1,0 +1,5 @@
+FROM almalinux:9
+ENV FAMILY="POOSA" \
+    FATHER="RAMESH" \
+    MOTHER="SHOBA"
+CMD ["sleep", "1000"]
