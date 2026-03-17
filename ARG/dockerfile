@@ -10,9 +10,6 @@ FROM almalinux:${VERSION:-9}
 # COURSE and TRAINER are build-time variables with default values
 ARG COURSE="DOCKER" \
     TRAINER="AKHILA"
-  
-# Convert build-time variable (ARG) to runtime variable (ENV)
-# ENV variables will be available inside the running container
 ENV COURSE=${COURSE}  
 
 # Print values during build time (visible in docker build logs)
@@ -25,4 +22,3 @@ RUN echo "Trainer: ${TRAINER}, Course: ${COURSE}, Version : ${VERSION}"
 # Keeps container running for testing/debugging
 CMD ["sleep", "1000"]    
 
- 
