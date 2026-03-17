@@ -1,8 +1,28 @@
+# Define build-time argument for base image version
+# If not provided, default value will be used in FROM
 ARG VERSION
+
+# Use VERSION argument in base image
+# If VERSION is not passed, it defaults to 9
 FROM almalinux:${VERSION:-9}
+
+# Re-declare ARG after FROM to use it in build steps
+# COURSE and TRAINER are build-time variables with default values
 ARG COURSE="DOCKER" \
     TRAINER="AKHILA"
+  
+# Convert build-time variable (ARG) to runtime variable (ENV)
+# ENV variables will be available inside the running container
+ENV COURSE=${COURSE}  
+
+# Print values during build time (visible in docker build logs)
+# VERSION → base image version
+# COURSE → can be overridden using --build-arg
+# TRAINER → default or overridden value
 RUN echo "Trainer: ${TRAINER}, Course: ${COURSE}, Version : ${VERSION}"
+
+# Default command when container starts
+# Keeps container running for testing/debugging
 CMD ["sleep", "1000"]    
 
  
