@@ -1,14 +1,39 @@
-ARG APP_VERSION 
-FROM almalinux:9 
-ARG APP_VERSION = "1.0"
-RUN dnf install nginx -y 
-WORKDIR  /usr/share/nginx/html
-COPY index.html /usr/share/nginx/html
-LABEL project=roboshop env=dev 
-RUN useradd devops
+FROM almalinux:9
+
+LABEL project=awsdevops \
+      env=dev \
+      maintainer=akhila
+
+ARG APP_VERSION=1.0
+
+# Install nginx and cleanup
+RUN dnf install nginx -y && dnf clean all
+
+# Change nginx port to 8080
+RUN sed -i 's/listen       80;/listen 8080;/' /etc/nginx/nginx.conf
+
+# Create non-root user
+RUN useradd -m devops
+
+# Set working directory
+WORKDIR /usr/share/nginx/html
+
+# Copy app files
+COPY index.html .
+
+# Give permissions to devops user
+RUN chown -R devops:devops /usr/share/nginx /var/log/nginx /var/lib/nginx
+
+# Switch to non-root user
 USER devops
+
+# Set environment variable
 ENV APP_VERSION=${APP_VERSION}
-RUN echo "APP Version: ${APP_VERSION}"
+
+# Document port
+EXPOSE 8080
+
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
 
 
