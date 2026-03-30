@@ -15,14 +15,23 @@ RUN sed -i 's/listen       80;/listen 8080;/' /etc/nginx/nginx.conf
 # Create non-root user
 RUN useradd -m devops
 
+# Give permissions to devops user
+RUN mkdir -p /run/nginx \
+ && chown -R devops:devops \
+    /run/nginx \
+    /usr/share/nginx \
+    /var/log/nginx \
+    /var/lib/nginx \
+    /var/cache/nginx
+
+# Fix nginx PID path
+RUN sed -i 's|/run/nginx.pid|/run/nginx/nginx.pid|' /etc/nginx/nginx.conf
+
 # Set working directory
 WORKDIR /usr/share/nginx/html
 
 # Copy app files
 COPY index.html .
-
-# Give permissions to devops user
-RUN chown -R devops:devops /usr/share/nginx /var/log/nginx /var/lib/nginx
 
 # Switch to non-root user
 USER devops
