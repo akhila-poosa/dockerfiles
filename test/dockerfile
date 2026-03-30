@@ -1,0 +1,14 @@
+ARG APP_VERSION 
+FROM almalinux:9 
+ARG APP_VERSION = "1.0"
+RUN dnf install nginx -y 
+WORKDIR  /usr/share/nginx/html
+COPY index.html /usr/share/nginx/html
+LABEL project=roboshop env=dev 
+RUN useradd devops
+USER devops
+ENV APP_VERSION=${APP_VERSION}
+RUN echo "APP Version: ${APP_VERSION}"
+CMD ["nginx", "-g", "daemon off;"]
+
+
