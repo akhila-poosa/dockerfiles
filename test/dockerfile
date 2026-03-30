@@ -6,26 +6,23 @@ LABEL project=awsdevops \
 
 ARG APP_VERSION=1.0
 
-# Install nginx and cleanup
-RUN dnf install nginx -y && dnf clean all
+# Install nginx
+RUN dnf install -y nginx && dnf clean all
 
-# Change nginx port to 8080
-RUN sed -i 's/listen       80;/listen 8080;/' /etc/nginx/nginx.conf
+# Configure nginx (port + pid path)
+RUN sed -i 's/listen       80;/listen 8080;/' /etc/nginx/nginx.conf \
+ && sed -i 's|pid /run/nginx.pid;|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf
 
 # Create non-root user
 RUN useradd -m devops
 
-# Give permissions to devops user
-RUN mkdir -p /run/nginx \
- && chown -R devops:devops \
-    /run/nginx \
+# Fix permissions (only required dirs)
+RUN chown -R devops:devops \
     /usr/share/nginx \
     /var/log/nginx \
     /var/lib/nginx \
-    /var/cache/nginx
-
-# Fix nginx PID path
-RUN sed -i 's|/run/nginx.pid|/run/nginx/nginx.pid|' /etc/nginx/nginx.conf
+    /var/cache/nginx \
+    /tmp
 
 # Set working directory
 WORKDIR /usr/share/nginx/html
@@ -39,10 +36,8 @@ USER devops
 # Set environment variable
 ENV APP_VERSION=${APP_VERSION}
 
-# Document port
+# Expose port
 EXPOSE 8080
 
-# Start nginx
+# Start nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]
-
-
