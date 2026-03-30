@@ -21,7 +21,6 @@ RUN chown -R devops:devops \
     /usr/share/nginx \
     /var/log/nginx \
     /var/lib/nginx \
-    /var/cache/nginx \
     /tmp
 
 # Set working directory
